@@ -1,17 +1,17 @@
-# GCP IoT — Integración de dispositivos IoT con Google Cloud Platform
+# GCP IoT — IoT Device Integration with Google Cloud Platform
 
-Repositorio con dos aproximaciones prácticas para enviar datos desde dispositivos IoT a **Google BigQuery** usando Google Cloud Platform. Cada enfoque usa un protocolo de comunicación diferente, lo que permite comparar sus ventajas según el caso de uso.
+Repository with two practical approaches for sending data from IoT devices to **Google BigQuery** using Google Cloud Platform. Each approach uses a different communication protocol, allowing you to compare their advantages depending on the use case.
 
 ---
 
-## Arquitecturas disponibles
+## Available Architectures
 
-### 1. `http - bigquery` — Ingesta vía HTTP y Cloud Functions
+### 1. `http - bigquery` — Ingestion via HTTP and Cloud Functions
 
-Los dispositivos envían datos mediante peticiones **HTTP/HTTPS** a una **Google Cloud Function**, que actúa como punto de entrada y se encarga de insertar los registros en BigQuery.
+Devices send data through **HTTP/HTTPS** requests to a **Google Cloud Function**, which acts as the entry point and handles inserting records into BigQuery.
 
 ```
-Dispositivo IoT
+IoT Device
      │
      │  HTTP POST (JSON payload)
      ▼
@@ -19,59 +19,59 @@ Cloud Function (GCP)
      │
      │  Streaming insert
      ▼
-BigQuery (tabla destino)
+BigQuery (target table)
 ```
 
-**Cuándo usarlo:** dispositivos con conectividad estable, integraciones REST sencillas, baja frecuencia de envío.
+**When to use it:** devices with stable connectivity, simple REST integrations, low sending frequency.
 
 ---
 
-### 2. `mqtt - bigquery` — Ingesta vía broker MQTT
+### 2. `mqtt - bigquery` — Ingestion via MQTT broker
 
-Los dispositivos publican mensajes en un **broker MQTT**. Un suscriptor recoge los mensajes y los inserta en BigQuery.
+Devices publish messages to an **MQTT broker**. A subscriber picks up the messages and inserts them into BigQuery.
 
 ```
-Dispositivo IoT
+IoT Device
      │
      │  MQTT publish (topic)
      ▼
-Broker MQTT
+MQTT Broker
      │
      │  subscribe + callback
      ▼
-Cliente Python (suscriptor)
+Python Client (subscriber)
      │
      │  Streaming insert
      ▼
-BigQuery (tabla destino)
+BigQuery (target table)
 ```
 
-**Cuándo usarlo:** dispositivos con recursos limitados, redes poco estables, alta frecuencia de mensajes, arquitecturas pub/sub.
+**When to use it:** resource-constrained devices, unstable networks, high message frequency, pub/sub architectures.
 
 ---
 
-## Requisitos
+## Requirements
 
 - Python 3.8+
-- Proyecto activo en [Google Cloud Platform](https://console.cloud.google.com/)
-- Cuenta de servicio con permisos sobre BigQuery (`roles/bigquery.dataEditor`)
-- Dataset y tabla en BigQuery creados previamente
-- Para MQTT: broker accesible (p.ej. [Mosquitto](https://mosquitto.org/) local o [HiveMQ Cloud](https://www.hivemq.com/mqtt-cloud-broker/))
+- Active project on [Google Cloud Platform](https://console.cloud.google.com/)
+- Service account with BigQuery permissions (`roles/bigquery.dataEditor`)
+- Dataset and table in BigQuery created beforehand
+- For MQTT: accessible broker (e.g. local [Mosquitto](https://mosquitto.org/) or [HiveMQ Cloud](https://www.hivemq.com/mqtt-cloud-broker/))
 
 ---
 
-## Estructura del repositorio
+## Repository Structure
 
 ```
 gcp_iot/
-├── http - bigquery/        # Enfoque HTTP con Cloud Functions
-│   ├── main.py             # Código de la Cloud Function
-│   ├── http_cloud_function.py           # Cliente simulador de dispositivo
+├── http - bigquery/        # HTTP approach with Cloud Functions
+│   ├── main.py             # Cloud Function code
+│   ├── http_cloud_function.py           # Device simulator client
 │   └── requirements.txt
 │
-├── mqtt - bigquery/        # Enfoque MQTT con broker
-│   ├── mqtt_subscriber_bigquery.py       # Suscriptor que inserta en BigQuery
-│   ├── mqtt_publisher_bigquery.py        # Publicador simulador de dispositivo
+├── mqtt - bigquery/        # MQTT approach with broker
+│   ├── mqtt_subscriber_bigquery.py       # Subscriber that inserts into BigQuery
+│   ├── mqtt_publisher_bigquery.py        # Device simulator publisher
 │   └── requirements.txt
 │
 └── .gitignore
